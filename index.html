@@ -3,35 +3,198 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Qonlab 로또 번호 추첨기는 1부터 45까지의 번호 중 6개와 보너스 번호를 무작위로 뽑고, 로또 확률과 번호 선택 원리를 쉽게 설명하는 무료 도구입니다." />
   <meta name="google-adsense-account" content="ca-pub-3906729189766983" />
-  <title>로또 번호 추첨기</title>
+  <link rel="canonical" href="https://visionbay.github.io/qonlab/" />
+  <title>Qonlab 로또 번호 추첨기 - 무료 번호 생성과 확률 가이드</title>
   <link rel="stylesheet" href="styles.css" />
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3906729189766983" crossorigin="anonymous"></script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Qonlab 로또 번호 추첨기",
+      "url": "https://visionbay.github.io/qonlab/",
+      "applicationCategory": "UtilityApplication",
+      "operatingSystem": "Any",
+      "inLanguage": "ko-KR",
+      "description": "로또 번호를 무작위로 생성하고 로또 확률, 번호 선택 원리, 책임 있는 이용 방법을 안내하는 무료 웹 도구입니다."
+    }
+  </script>
 </head>
 <body>
-  <main class="container">
-    <section class="card lotto-card">
-      <div class="topbar">
-        <button class="theme-toggle" id="themeToggle" type="button" aria-label="다크 모드로 전환" aria-pressed="false">
-          <span class="theme-toggle__icon" aria-hidden="true">☀</span>
-          <span class="theme-toggle__text">화이트</span>
-        </button>
+  <header class="site-header">
+    <a class="brand" href="#home" aria-label="Qonlab 홈으로 이동">
+      <span class="brand-mark" aria-hidden="true">Q</span>
+      <span>Qonlab</span>
+    </a>
+
+    <nav class="site-nav" aria-label="주요 메뉴">
+      <a href="#generator">번호 추첨</a>
+      <a href="#guide">가이드</a>
+      <a href="#privacy">개인정보</a>
+      <a href="#contact">문의</a>
+    </nav>
+
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="다크 모드로 전환" aria-pressed="false">
+      <span class="theme-toggle__icon" aria-hidden="true">☀</span>
+      <span class="theme-toggle__text">화이트</span>
+    </button>
+  </header>
+
+  <main id="home">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">무료 로또 번호 생성 도구</p>
+        <h1>로또 번호를 뽑고, 왜 그런 조합이 나왔는지 이해하세요.</h1>
+        <p>
+          Qonlab은 1부터 45까지의 숫자 중 중복 없이 6개 번호와 보너스 번호를 생성합니다.
+          단순 결과만 보여주는 데서 끝내지 않고, 로또 확률과 무작위 추첨의 의미를 함께 설명합니다.
+        </p>
+        <div class="hero-actions">
+          <a class="primary-link" href="#generator">번호 바로 뽑기</a>
+          <a class="secondary-link" href="#guide">확률 가이드 보기</a>
+        </div>
       </div>
 
-      <div class="header">
-        <h1>로또 번호 추첨기</h1>
-        <p>6개 번호와 보너스 번호를 무작위로 생성해 드립니다.</p>
-      </div>
+      <section class="tool-panel" id="generator" aria-labelledby="generatorTitle">
+        <div class="section-heading">
+          <h2 id="generatorTitle">로또 번호 추첨기</h2>
+          <p>버튼을 누를 때마다 새로운 번호 조합을 생성합니다.</p>
+        </div>
 
-      <div class="numbers" id="numbers" aria-label="추첨 번호"></div>
-      <div class="bonus" id="bonus" aria-label="보너스 번호"></div>
+        <div class="numbers" id="numbers" aria-label="추첨 번호"></div>
+        <div class="bonus" id="bonus" aria-label="보너스 번호"></div>
 
-      <button class="action-button" id="actionButton" type="button">번호 생성하기</button>
-      <p class="info">버튼을 누르면 새로운 로또 번호를 확인할 수 있습니다.</p>
+        <button class="action-button" id="actionButton" type="button">번호 생성하기</button>
+        <p class="info">이 도구는 재미와 정보 제공을 위한 것이며 당첨을 보장하지 않습니다.</p>
+      </section>
     </section>
 
-    <section class="card contact-card" aria-labelledby="partnerTitle">
-      <div class="header">
+    <section class="content-section" id="guide" aria-labelledby="guideTitle">
+      <div class="section-heading">
+        <p class="eyebrow">번호 선택 가이드</p>
+        <h2 id="guideTitle">무작위 번호 생성이 필요한 이유</h2>
+        <p>
+          로또 번호는 매 회차 독립적으로 추첨됩니다. 이전 회차에 자주 나온 번호나 오래 나오지 않은 번호가
+          다음 회차의 당첨 가능성을 높여주지는 않습니다.
+        </p>
+      </div>
+
+      <div class="article-grid">
+        <article class="info-block">
+          <h3>중복 없는 7개 번호</h3>
+          <p>
+            생성기는 1부터 45까지의 숫자를 배열로 만들고, 이미 뽑힌 숫자는 후보에서 제거합니다.
+            그래서 같은 번호가 두 번 나오지 않으며, 앞의 6개는 오름차순으로 정렬하고 마지막 숫자는 보너스 번호로 표시합니다.
+          </p>
+        </article>
+
+        <article class="info-block">
+          <h3>1등 확률 이해하기</h3>
+          <p>
+            로또 6/45에서 6개 번호를 모두 맞히는 경우의 수는 45개 중 6개를 고르는 조합입니다.
+            가능한 조합은 8,145,060가지이므로 특정 조합 하나가 1등이 될 확률은 약 814만 분의 1입니다.
+          </p>
+        </article>
+
+        <article class="info-block">
+          <h3>패턴보다 예산 관리</h3>
+          <p>
+            생일, 연속수, 홀짝 비율 같은 패턴은 번호를 고르는 방식일 뿐 확률을 바꾸지 않습니다.
+            로또는 투자 수단이 아니라 복권이므로 정해둔 소액 예산 안에서만 이용하는 편이 안전합니다.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section" aria-labelledby="qualityTitle">
+      <div class="section-heading">
+        <p class="eyebrow">Qonlab 운영 원칙</p>
+        <h2 id="qualityTitle">사용자에게 도움이 되는 페이지를 우선합니다</h2>
+      </div>
+
+      <div class="principles">
+        <div>
+          <h3>광고보다 콘텐츠</h3>
+          <p>
+            광고는 사이트 운영을 돕기 위한 보조 요소입니다. 본문을 가리거나 도구 사용을 방해하는 위치에
+            광고 단위를 강제로 배치하지 않고, 자동 광고도 Google 정책에 맞는 범위에서만 사용합니다.
+          </p>
+        </div>
+        <div>
+          <h3>명확한 정보 구조</h3>
+          <p>
+            번호 생성, 원리 설명, 개인정보 안내, 문의 창구를 한 페이지에서 쉽게 찾을 수 있도록 구성했습니다.
+            내용이 없는 페이지나 사용자를 다른 곳으로 유도하기 위한 페이지는 만들지 않습니다.
+          </p>
+        </div>
+        <div>
+          <h3>책임 있는 이용 안내</h3>
+          <p>
+            이 사이트는 당첨 예측이나 수익을 약속하지 않습니다. 무작위 번호 생성과 확률 이해를 돕는
+            정보성 도구로 운영합니다.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section" aria-labelledby="faqTitle">
+      <div class="section-heading">
+        <p class="eyebrow">자주 묻는 질문</p>
+        <h2 id="faqTitle">로또 번호 생성 FAQ</h2>
+      </div>
+
+      <div class="faq-list">
+        <details>
+          <summary>이 번호로 당첨 가능성이 높아지나요?</summary>
+          <p>아니요. 모든 조합의 당첨 확률은 같습니다. 이 도구는 임의의 조합을 편하게 만드는 용도입니다.</p>
+        </details>
+        <details>
+          <summary>번호가 서버에 저장되나요?</summary>
+          <p>아니요. 번호 생성은 브라우저에서 즉시 처리되며, 생성된 번호를 별도로 수집하거나 저장하지 않습니다.</p>
+        </details>
+        <details>
+          <summary>왜 확률 정보를 함께 제공하나요?</summary>
+          <p>사용자가 복권의 성격을 이해하고 과도한 기대나 지출을 피할 수 있도록 돕기 위해서입니다.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="content-section policy-section" id="privacy" aria-labelledby="privacyTitle">
+      <div class="section-heading">
+        <p class="eyebrow">개인정보 및 광고 안내</p>
+        <h2 id="privacyTitle">수집 정보와 제3자 서비스를 투명하게 안내합니다</h2>
+      </div>
+
+      <div class="policy-grid">
+        <article>
+          <h3>번호 생성</h3>
+          <p>로또 번호 생성 과정에서는 이름, 이메일, 위치 정보 같은 개인 정보를 요청하지 않습니다.</p>
+        </article>
+        <article>
+          <h3>제휴 문의</h3>
+          <p>문의 폼을 제출하면 사용자가 입력한 이름, 회사/브랜드, 이메일, 문의 내용이 Formspree를 통해 전달됩니다.</p>
+        </article>
+        <article>
+          <h3>광고와 쿠키</h3>
+          <p>
+            Google AdSense 등 제3자 광고 서비스는 광고 제공과 부정 사용 방지를 위해 쿠키 또는 유사 기술을 사용할 수 있습니다.
+            사용자는 브라우저 설정에서 쿠키 사용을 관리할 수 있습니다.
+          </p>
+        </article>
+        <article>
+          <h3>댓글</h3>
+          <p>
+            댓글 기능은 Disqus를 통해 제공됩니다. 댓글 작성 시 Disqus의 계정 및 개인정보 처리 기준이 적용될 수 있습니다.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section contact-section" id="contact" aria-labelledby="partnerTitle">
+      <div class="section-heading">
+        <p class="eyebrow">문의</p>
         <h2 id="partnerTitle">제휴 문의</h2>
         <p>함께 진행하고 싶은 제휴 내용을 남겨주시면 확인 후 연락드리겠습니다.</p>
       </div>
@@ -65,10 +228,11 @@
       </form>
     </section>
 
-    <section class="card comments-card" aria-labelledby="commentsTitle">
-      <div class="header">
+    <section class="content-section comments-section" aria-labelledby="commentsTitle">
+      <div class="section-heading">
+        <p class="eyebrow">커뮤니티</p>
         <h2 id="commentsTitle">댓글</h2>
-        <p>의견이나 질문을 자유롭게 남겨주세요.</p>
+        <p>의견이나 질문을 남길 수 있습니다. 스팸, 불법 홍보, 비방성 댓글은 운영 기준에 따라 제한될 수 있습니다.</p>
       </div>
 
       <div id="disqus_thread"></div>
@@ -92,6 +256,12 @@
       </noscript>
     </section>
   </main>
+
+  <footer class="site-footer">
+    <p>© 2026 Qonlab. 로또 번호 생성과 확률 정보를 제공하는 무료 도구입니다.</p>
+    <a href="#privacy">개인정보 및 광고 안내</a>
+  </footer>
+
   <script src="script.js"></script>
 </body>
 </html>
