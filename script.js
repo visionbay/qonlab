@@ -13,6 +13,8 @@ const latestBalls = document.getElementById("latestBalls");
 const latestMeta = document.getElementById("latestMeta");
 const recentResults = document.getElementById("recentResults");
 const dashboardStats = document.getElementById("dashboardStats");
+const officialRankStats = document.getElementById("officialRankStats");
+const officialRankEntries = document.getElementById("officialRankEntries");
 const savedEntries = document.getElementById("savedEntries");
 const verifiedEntries = document.getElementById("verifiedEntries");
 const refreshResultsButton = document.getElementById("refreshResultsButton");
@@ -97,15 +99,56 @@ function estimateLatestDrawNo() {
 }
 
 function normalizeDraw(data) {
+  const drawNo = Number(data.drwNo || data.ltEpsd);
+  const date = data.drwNoDate || formatDrawDate(data.ltRflYmd);
+  const numbers = data.ltEpsd
+    ? [1, 2, 3, 4, 5, 6].map((index) => Number(data[`tm${index}WnNo`]))
+    : [1, 2, 3, 4, 5, 6].map((index) => Number(data[`drwtNo${index}`]));
+
   return {
-    drawNo: Number(data.drwNo),
-    date: data.drwNoDate,
-    numbers: [1, 2, 3, 4, 5, 6].map((index) => Number(data[`drwtNo${index}`])),
-    bonusNumber: Number(data.bnusNo),
-    firstPrizeWinners: Number(data.firstPrzwnerCo || 0),
-    firstWinAmount: Number(data.firstWinamnt || 0),
-    totalSales: Number(data.totSellamnt || 0),
+    drawNo,
+    date,
+    numbers,
+    bonusNumber: Number(data.bnusNo || data.bnsWnNo),
+    firstPrizeWinners: Number(data.firstPrzwnerCo || data.rnk1WnNope || 0),
+    firstWinAmount: Number(data.firstWinamnt || data.rnk1WnAmt || 0),
+    totalSales: Number(data.totSellamnt || data.wholEpsdSumNtslAmt || data.rlvtEpsdSumNtslAmt || 0),
+    ranks: {
+      "1등": {
+        winners: Number(data.rnk1WnNope || data.firstPrzwnerCo || 0),
+        amount: Number(data.rnk1WnAmt || data.firstWinamnt || 0),
+        totalAmount: Number(data.rnk1SumWnAmt || 0),
+      },
+      "2등": {
+        winners: Number(data.rnk2WnNope || 0),
+        amount: Number(data.rnk2WnAmt || 0),
+        totalAmount: Number(data.rnk2SumWnAmt || 0),
+      },
+      "3등": {
+        winners: Number(data.rnk3WnNope || 0),
+        amount: Number(data.rnk3WnAmt || 0),
+        totalAmount: Number(data.rnk3SumWnAmt || 0),
+      },
+      "4등": {
+        winners: Number(data.rnk4WnNope || 0),
+        amount: Number(data.rnk4WnAmt || 0),
+        totalAmount: Number(data.rnk4SumWnAmt || 0),
+      },
+      "5등": {
+        winners: Number(data.rnk5WnNope || 0),
+        amount: Number(data.rnk5WnAmt || 0),
+        totalAmount: Number(data.rnk5SumWnAmt || 0),
+      },
+    },
   };
+}
+
+function formatDrawDate(value) {
+  if (!value || value.length !== 8) {
+    return "";
+  }
+
+  return `${value.slice(0, 4)}-${value.slice(4, 6)}-${value.slice(6, 8)}`;
 }
 
 async function fetchDraw(drawNo) {
@@ -113,19 +156,21 @@ async function fetchDraw(drawNo) {
     return resultCache.get(drawNo);
   }
 
-  const url = `https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${drawNo}`;
+  const url = `https://www.dhlottery.co.kr/lt645/selectPstLt645InfoNew.do?srchDir=center&srchLtEpsd=${drawNo}`;
   const response = await fetch(url, {
     headers: {
       Accept: "application/json",
     },
   });
   const data = await response.json();
+  const list = data?.data?.list || [];
+  const target = list.find((draw) => Number(draw.ltEpsd) === Number(drawNo));
 
-  if (data.returnValue !== "success") {
+  if (!target) {
     throw new Error(`Draw ${drawNo} is not available`);
   }
 
-  const draw = normalizeDraw(data);
+  const draw = normalizeDraw(target);
   resultCache.set(drawNo, draw);
   return draw;
 }
@@ -135,7 +180,17 @@ async function fetchLatestDraw() {
 
   for (let drawNo = estimated + 1; drawNo >= Math.max(1, estimated - 12); drawNo -= 1) {
     try {
-      return await fetchDraw(drawNo);
+      const response = await fetch(`https://www.dhlottery.co.kr/lt645/selectPstLt645InfoNew.do?srchDir=center&srchLtEpsd=${drawNo}`, {
+        headers: {
+          Accept: "application/json",
+        },
+      });
+      const data = await response.json();
+      const list = data?.data?.list || [];
+
+      if (list.length > 0) {
+        return normalizeDraw(list.sort((a, b) => Number(b.ltEpsd) - Number(a.ltEpsd))[0]);
+      }
     } catch (error) {
       // 최근 추정 회차가 아직 공개되지 않았거나 브라우저에서 차단될 수 있어 이전 회차를 순차 확인합니다.
     }
@@ -189,6 +244,61 @@ function renderRecentResults(draws) {
       </div>
     `)
     .join("");
+}
+
+function buildOfficialRankRecords(draws) {
+  const withinTwoYears = draws
+    .filter((draw) => {
+      if (!draw.date) return false;
+      const drawDate = new Date(`${draw.date}T00:00:00+09:00`);
+      const twoYearsAgo = new Date();
+      twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2);
+      return drawDate >= twoYearsAgo;
+    })
+    .sort((a, b) => b.drawNo - a.drawNo);
+  const limits = { "1등": 6, "2등": 20, "3등": 47 };
+
+  return Object.entries(limits).flatMap(([rank, limit]) =>
+    withinTwoYears
+      .filter((draw) => draw.ranks?.[rank]?.winners > 0)
+      .slice(0, limit)
+      .map((draw) => ({
+        drawNo: draw.drawNo,
+        date: draw.date,
+        rank,
+        winners: draw.ranks[rank].winners,
+        amount: draw.ranks[rank].amount,
+        numbers: draw.numbers,
+        bonusNumber: draw.bonusNumber,
+      })),
+  );
+}
+
+function renderOfficialRankRecords(draws) {
+  const records = buildOfficialRankRecords(draws);
+  const counts = records.reduce((acc, record) => {
+    acc[record.rank] = (acc[record.rank] || 0) + 1;
+    return acc;
+  }, {});
+
+  officialRankStats.innerHTML = `
+    <span>1등 ${counts["1등"] || 0}/6</span>
+    <span>2등 ${counts["2등"] || 0}/20</span>
+    <span>3등 ${counts["3등"] || 0}/47</span>
+    <span>총 ${records.length}/73</span>
+  `;
+
+  officialRankEntries.innerHTML = records.length
+    ? records.map((record) => `
+      <div class="official-rank-entry">
+        <div>
+          <strong>${record.rank} · ${record.drawNo}회</strong>
+          <p>${record.date} · 당첨게임 ${record.winners.toLocaleString("ko-KR")}개 · 1게임당 ${formatCurrency(record.amount)}</p>
+          <p>${record.numbers.join(", ")} + ${record.bonusNumber}</p>
+        </div>
+      </div>
+    `).join("")
+    : `<p class="empty-state">공식 회차 데이터가 준비되면 최근 2년 내 1~3등 기록을 표시합니다.</p>`;
 }
 
 function getRank(numbers, draw) {
@@ -328,7 +438,7 @@ async function loadLottoResults() {
 
     try {
       latestResult = await fetchLatestDraw();
-      for (let drawNo = latestResult.drawNo; drawNo >= Math.max(1, latestResult.drawNo - 4); drawNo -= 1) {
+      for (let drawNo = latestResult.drawNo; drawNo >= Math.max(1, latestResult.drawNo - 103); drawNo -= 1) {
         recentDraws.push(await fetchDraw(drawNo));
       }
     } catch (error) {
@@ -342,7 +452,8 @@ async function loadLottoResults() {
     latestStatus.textContent = isCached
       ? "브라우저 직접 조회가 제한되어 서버 캐시 데이터를 표시 중입니다."
       : "동행복권 공개 회차 데이터를 기준으로 표시 중입니다.";
-    renderRecentResults(recentDraws);
+    renderRecentResults(recentDraws.slice(0, 5));
+    renderOfficialRankRecords(recentDraws);
     await verifySavedPicks(latestResult);
   } catch (error) {
     latestStatus.textContent = "브라우저에서 공식 회차 데이터를 불러오지 못했습니다. 잠시 후 다시 시도하거나 동행복권 공식 추첨결과를 확인해 주세요.";

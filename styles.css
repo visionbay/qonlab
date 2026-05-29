@@ -450,6 +450,75 @@ main {
   text-align: center;
 }
 
+.official-rank-panel {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--line));
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+}
+
+.official-rank-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.official-rank-heading h4 {
+  margin: 0;
+}
+
+.official-rank-heading p {
+  margin: 0.2rem 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.official-rank-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.official-rank-stats span {
+  padding: 0.65rem;
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.92rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.official-rank-list {
+  display: grid;
+  gap: 0.45rem;
+  max-height: 24rem;
+  overflow: auto;
+}
+
+.official-rank-entry {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.6rem 0.7rem;
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.official-rank-entry strong {
+  color: var(--text);
+}
+
+.official-rank-entry p {
+  margin: 0.2rem 0 0;
+  color: var(--muted);
+}
+
 .entry-list {
   display: grid;
   gap: 0.65rem;
@@ -723,7 +792,8 @@ main {
 
   .panel-title,
   .entry-card,
-  .recent-row {
+  .recent-row,
+  .official-rank-heading {
     display: grid;
   }
 
