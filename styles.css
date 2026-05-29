@@ -89,6 +89,31 @@ body {
   text-align: center;
 }
 
+.comments-card {
+  padding-top: 2rem;
+  text-align: left;
+}
+
+.comments-card .header {
+  text-align: center;
+}
+
+#disqus_thread {
+  min-height: 18rem;
+}
+
+.comments-card noscript {
+  display: block;
+  color: var(--muted);
+  line-height: 1.6;
+  text-align: center;
+}
+
+.comments-card noscript a {
+  color: var(--primary);
+  font-weight: 700;
+}
+
 .topbar {
   display: flex;
   justify-content: flex-end;

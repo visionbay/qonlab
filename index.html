@@ -62,6 +62,33 @@
         <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
       </form>
     </section>
+
+    <section class="card comments-card" aria-labelledby="commentsTitle">
+      <div class="header">
+        <h2 id="commentsTitle">댓글</h2>
+        <p>의견이나 질문을 자유롭게 남겨주세요.</p>
+      </div>
+
+      <div id="disqus_thread"></div>
+      <script>
+        var disqus_config = function () {
+          this.page.url = window.location.origin + window.location.pathname;
+          this.page.identifier = "qonlab-home";
+        };
+
+        (function () {
+          var d = document;
+          var s = d.createElement("script");
+          s.src = "https://sang-kr.disqus.com/embed.js";
+          s.setAttribute("data-timestamp", +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+      <noscript>
+        댓글을 보려면 JavaScript를 활성화해 주세요.
+        <a href="https://disqus.com/?ref_noscript">Disqus 댓글 보기</a>
+      </noscript>
+    </section>
   </main>
   <script src="script.js"></script>
 </body>
