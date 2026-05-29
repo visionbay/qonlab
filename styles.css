@@ -186,6 +186,13 @@ main {
   margin-top: 1.5rem;
 }
 
+.tool-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
 .primary-link,
 .secondary-link {
   min-height: 2.8rem;
@@ -207,6 +214,44 @@ main {
   border: 1px solid var(--line);
   background: var(--surface);
   color: var(--text);
+}
+
+.secondary-button,
+.small-button {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 800;
+  transition: transform 0.18s ease, border-color 0.18s ease;
+}
+
+.secondary-button {
+  padding: 0.95rem 1.2rem;
+  border-radius: 999px;
+  font-size: 1rem;
+}
+
+.small-button {
+  min-height: 2.4rem;
+  padding: 0 0.85rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+}
+
+.secondary-button:hover,
+.secondary-button:focus-visible,
+.small-button:hover,
+.small-button:focus-visible {
+  transform: translateY(-1px);
+  border-color: var(--primary);
+  outline: none;
+}
+
+.small-button:disabled {
+  cursor: wait;
+  opacity: 0.64;
+  transform: none;
 }
 
 .tool-panel,
@@ -299,6 +344,158 @@ main {
   margin-top: 1rem;
   color: var(--subtle);
   font-size: 0.95rem;
+}
+
+.save-status {
+  min-height: 1.4rem;
+  margin: 0.75rem 0 0;
+  color: var(--accent);
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.85fr);
+  gap: 1rem;
+}
+
+.result-panel,
+.record-panel {
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--surface);
+  padding: clamp(1rem, 3vw, 1.5rem);
+}
+
+.panel-title {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.panel-title h3,
+.record-panel h4 {
+  margin: 0;
+}
+
+.panel-title p {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+  font-size: 0.93rem;
+}
+
+.latest-result {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+}
+
+.latest-result strong {
+  font-size: 1.8rem;
+}
+
+.latest-result span,
+.result-meta {
+  color: var(--muted);
+}
+
+.result-balls {
+  justify-content: flex-start;
+  margin-bottom: 1rem;
+}
+
+.bonus-ball {
+  background: linear-gradient(160deg, var(--warning), #fb923c);
+}
+
+.recent-list {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.recent-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem;
+  border-radius: 12px;
+  background: var(--surface-strong);
+  color: var(--muted);
+  font-size: 0.94rem;
+}
+
+.recent-row strong {
+  color: var(--text);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.stats-grid span {
+  padding: 0.7rem 0.8rem;
+  border-radius: 12px;
+  background: var(--surface-strong);
+  color: var(--text);
+  font-weight: 800;
+  text-align: center;
+}
+
+.entry-list {
+  display: grid;
+  gap: 0.65rem;
+  margin: 0.65rem 0 1.2rem;
+}
+
+.entry-card {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--page-bg);
+}
+
+.entry-card p {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.entry-card > span {
+  flex: 0 0 auto;
+  color: var(--subtle);
+  font-size: 0.86rem;
+  font-weight: 700;
+  text-align: right;
+}
+
+.rank-win {
+  color: var(--success);
+}
+
+.rank-lose {
+  color: var(--subtle);
+}
+
+.empty-state {
+  margin: 0;
+  padding: 1rem;
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+  color: var(--muted);
+  text-align: center;
 }
 
 .article-grid,
@@ -493,7 +690,8 @@ main {
 
   .article-grid,
   .principles,
-  .policy-grid {
+  .policy-grid,
+  .dashboard-grid {
     grid-template-columns: 1fr;
   }
 }
@@ -521,6 +719,16 @@ main {
 
   .tool-panel {
     padding: 1rem;
+  }
+
+  .panel-title,
+  .entry-card,
+  .recent-row {
+    display: grid;
+  }
+
+  .entry-card > span {
+    text-align: left;
   }
 
   .ball {

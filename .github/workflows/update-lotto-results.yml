@@ -1,0 +1,31 @@
+name: Update lotto results
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 */6 * * *"
+    - cron: "0 12-16 * * 6"
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node scripts/update-lotto-results.mjs
+      - name: Commit updated results
+        run: |
+          if git diff --quiet -- data/lotto-results.json; then
+            echo "No lotto result changes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/lotto-results.json
+          git commit -m "Update lotto results cache"
+          git push
