@@ -1,0 +1,87 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: radial-gradient(circle at top, #eef2ff 0%, #f8fafc 60%);
+  color: #111827;
+}
+
+.container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.card {
+  width: min(520px, 100%);
+  padding: 2rem;
+  border-radius: 32px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.12);
+  text-align: center;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: clamp(2rem, 3.5vw, 2.8rem);
+}
+
+.header p {
+  margin: 0.75rem auto 1.8rem;
+  max-width: 360px;
+  color: #475569;
+  line-height: 1.6;
+}
+
+.numbers,
+.bonus {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.ball {
+  width: 3.5rem;
+  height: 3.5rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(160deg, #6366f1, #818cf8);
+  color: white;
+  font-weight: 700;
+  box-shadow: 0 12px 24px rgba(99, 102, 241, 0.24);
+}
+
+.bonus .ball {
+  background: linear-gradient(160deg, #f97316, #fb923c);
+}
+
+button {
+  padding: 0.95rem 1.6rem;
+  border: none;
+  border-radius: 999px;
+  background: #4f46e5;
+  color: white;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: transform 0.18s ease, background 0.18s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  background: #4338ca;
+}
+
+.info {
+  margin-top: 1rem;
+  color: #64748b;
+  font-size: 0.95rem;
+}
