@@ -186,13 +186,6 @@ main {
   margin-top: 1.5rem;
 }
 
-.tool-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.75rem;
-}
-
 .primary-link,
 .secondary-link {
   min-height: 2.8rem;
@@ -216,7 +209,6 @@ main {
   color: var(--text);
 }
 
-.secondary-button,
 .small-button {
   border: 1px solid var(--line);
   background: var(--surface);
@@ -226,12 +218,6 @@ main {
   transition: transform 0.18s ease, border-color 0.18s ease;
 }
 
-.secondary-button {
-  padding: 0.95rem 1.2rem;
-  border-radius: 999px;
-  font-size: 1rem;
-}
-
 .small-button {
   min-height: 2.4rem;
   padding: 0 0.85rem;
@@ -239,8 +225,6 @@ main {
   font-size: 0.9rem;
 }
 
-.secondary-button:hover,
-.secondary-button:focus-visible,
 .small-button:hover,
 .small-button:focus-visible {
   transform: translateY(-1px);
@@ -346,14 +330,6 @@ main {
   font-size: 0.95rem;
 }
 
-.save-status {
-  min-height: 1.4rem;
-  margin: 0.75rem 0 0;
-  color: var(--accent);
-  font-size: 0.92rem;
-  font-weight: 700;
-}
-
 .dashboard-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(320px, 0.85fr);
@@ -434,22 +410,6 @@ main {
   color: var(--text);
 }
 
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.5rem;
-  margin-bottom: 1.25rem;
-}
-
-.stats-grid span {
-  padding: 0.7rem 0.8rem;
-  border-radius: 12px;
-  background: var(--surface-strong);
-  color: var(--text);
-  font-weight: 800;
-  text-align: center;
-}
-
 .official-rank-panel {
   margin-bottom: 1.5rem;
   padding: 1rem;
@@ -517,45 +477,6 @@ main {
 .official-rank-entry p {
   margin: 0.2rem 0 0;
   color: var(--muted);
-}
-
-.entry-list {
-  display: grid;
-  gap: 0.65rem;
-  margin: 0.65rem 0 1.2rem;
-}
-
-.entry-card {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.85rem;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  background: var(--page-bg);
-}
-
-.entry-card p {
-  margin: 0.25rem 0 0;
-  color: var(--muted);
-  font-size: 0.92rem;
-}
-
-.entry-card > span {
-  flex: 0 0 auto;
-  color: var(--subtle);
-  font-size: 0.86rem;
-  font-weight: 700;
-  text-align: right;
-}
-
-.rank-win {
-  color: var(--success);
-}
-
-.rank-lose {
-  color: var(--subtle);
 }
 
 .empty-state {
@@ -791,14 +712,9 @@ main {
   }
 
   .panel-title,
-  .entry-card,
   .recent-row,
   .official-rank-heading {
     display: grid;
-  }
-
-  .entry-card > span {
-    text-align: left;
   }
 
   .ball {

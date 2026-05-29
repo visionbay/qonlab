@@ -1,8 +1,6 @@
 const button = document.getElementById("actionButton");
-const savePickButton = document.getElementById("savePickButton");
 const numbersEl = document.getElementById("numbers");
 const bonusEl = document.getElementById("bonus");
-const saveStatus = document.getElementById("saveStatus");
 const themeToggle = document.getElementById("themeToggle");
 const themeIcon = themeToggle.querySelector(".theme-toggle__icon");
 const themeText = themeToggle.querySelector(".theme-toggle__text");
@@ -12,19 +10,14 @@ const latestDate = document.getElementById("latestDate");
 const latestBalls = document.getElementById("latestBalls");
 const latestMeta = document.getElementById("latestMeta");
 const recentResults = document.getElementById("recentResults");
-const dashboardStats = document.getElementById("dashboardStats");
 const officialRankStats = document.getElementById("officialRankStats");
 const officialRankEntries = document.getElementById("officialRankEntries");
-const savedEntries = document.getElementById("savedEntries");
-const verifiedEntries = document.getElementById("verifiedEntries");
 const refreshResultsButton = document.getElementById("refreshResultsButton");
 const partnerForm = document.getElementById("partnerForm");
 const formStatus = document.getElementById("formStatus");
 
 const savedTheme = localStorage.getItem("theme");
 const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-const picksKey = "qonlab.savedPicks.v1";
-const recordsKey = "qonlab.verifiedRecords.v1";
 const resultCache = new Map();
 
 let currentPick = null;
@@ -46,18 +39,6 @@ function getInitialTheme() {
   }
 
   return prefersDark ? "dark" : "light";
-}
-
-function readStorage(key) {
-  try {
-    return JSON.parse(localStorage.getItem(key)) || [];
-  } catch (error) {
-    return [];
-  }
-}
-
-function writeStorage(key, value) {
-  localStorage.setItem(key, JSON.stringify(value));
 }
 
 function generateLottoNumbers() {
@@ -88,7 +69,6 @@ function renderNumbers() {
     .join("");
 
   bonusEl.innerHTML = `<span class="ball">보너스</span><span class="ball">${currentPick.bonusNumber}</span>`;
-  saveStatus.textContent = "";
 }
 
 function estimateLatestDrawNo() {
@@ -301,133 +281,6 @@ function renderOfficialRankRecords(draws) {
     : `<p class="empty-state">공식 회차 데이터가 준비되면 최근 2년 내 1~3등 기록을 표시합니다.</p>`;
 }
 
-function getRank(numbers, draw) {
-  const matched = numbers.filter((num) => draw.numbers.includes(num)).length;
-  const bonusMatched = numbers.includes(draw.bonusNumber);
-
-  if (matched === 6) return { rank: "1등", matched, bonusMatched, winning: true };
-  if (matched === 5 && bonusMatched) return { rank: "2등", matched, bonusMatched, winning: true };
-  if (matched === 5) return { rank: "3등", matched, bonusMatched, winning: true };
-  if (matched === 4) return { rank: "4등", matched, bonusMatched, winning: true };
-  if (matched === 3) return { rank: "5등", matched, bonusMatched, winning: true };
-  return { rank: "낙첨", matched, bonusMatched, winning: false };
-}
-
-async function verifySavedPicks(draw) {
-  const picks = readStorage(picksKey);
-  const records = readStorage(recordsKey);
-  const pending = [];
-  const verified = [];
-
-  for (const pick of picks) {
-    if (pick.targetDraw > draw.drawNo) {
-      pending.push(pick);
-      continue;
-    }
-
-    try {
-      const result = await fetchDraw(pick.targetDraw);
-      const rank = getRank(pick.numbers, result);
-      verified.push({
-        ...pick,
-        verifiedAt: new Date().toISOString(),
-        resultNumbers: result.numbers,
-        resultBonusNumber: result.bonusNumber,
-        rank: rank.rank,
-        matched: rank.matched,
-        bonusMatched: rank.bonusMatched,
-        winning: rank.winning,
-      });
-    } catch (error) {
-      pending.push(pick);
-    }
-  }
-
-  if (verified.length > 0) {
-    writeStorage(picksKey, pending);
-    writeStorage(recordsKey, [...verified, ...records].slice(0, 100));
-  }
-}
-
-function renderDashboard() {
-  const picks = readStorage(picksKey);
-  const records = readStorage(recordsKey);
-  const winningRecords = records.filter((record) => record.winning);
-  const rankCounts = records.reduce((acc, record) => {
-    acc[record.rank] = (acc[record.rank] || 0) + 1;
-    return acc;
-  }, {});
-
-  dashboardStats.innerHTML = `
-    <span>대기 ${picks.length}</span>
-    <span>검증 ${records.length}</span>
-    <span>당첨 ${winningRecords.length}</span>
-    <span>1등 ${rankCounts["1등"] || 0}</span>
-    <span>2등 ${rankCounts["2등"] || 0}</span>
-    <span>3등 ${rankCounts["3등"] || 0}</span>
-    <span>4등 ${rankCounts["4등"] || 0}</span>
-  `;
-
-  savedEntries.innerHTML = picks.length
-    ? picks.map((pick) => renderPickEntry(pick)).join("")
-    : `<p class="empty-state">아직 저장된 번호가 없습니다. 번호를 생성한 뒤 “다음 회차 기록에 저장”을 눌러주세요.</p>`;
-
-  verifiedEntries.innerHTML = records.length
-    ? records.map((record) => renderRecordEntry(record)).join("")
-    : `<p class="empty-state">다음 회차 결과가 확인되면 저장된 번호가 자동으로 채점됩니다.</p>`;
-}
-
-function renderPickEntry(pick) {
-  return `
-    <div class="entry-card">
-      <div>
-        <strong>#${pick.entryNo} · ${pick.targetDraw}회 대기</strong>
-        <p>${pick.numbers.join(", ")}</p>
-      </div>
-      <span>${new Date(pick.createdAt).toLocaleDateString("ko-KR")}</span>
-    </div>
-  `;
-}
-
-function renderRecordEntry(record) {
-  const rankClass = record.winning ? "rank-win" : "rank-lose";
-
-  return `
-    <div class="entry-card">
-      <div>
-        <strong>#${record.entryNo} · ${record.targetDraw}회 <span class="${rankClass}">${record.rank}</span></strong>
-        <p>내 번호: ${record.numbers.join(", ")}</p>
-        <p>당첨 번호: ${record.resultNumbers.join(", ")} + ${record.resultBonusNumber}</p>
-      </div>
-      <span>${record.matched}개 일치${record.bonusMatched ? " · 보너스 일치" : ""}</span>
-    </div>
-  `;
-}
-
-function saveCurrentPick() {
-  if (!currentPick) {
-    renderNumbers();
-  }
-
-  const picks = readStorage(picksKey);
-  const records = readStorage(recordsKey);
-  const targetDraw = (latestResult?.drawNo || estimateLatestDrawNo()) + 1;
-  const entryNo = picks.length + records.length + 1;
-  const id = window.crypto?.randomUUID?.() || `${Date.now()}-${entryNo}`;
-
-  const pick = {
-    id,
-    entryNo,
-    targetDraw,
-    numbers: currentPick.mainNumbers,
-    createdAt: new Date().toISOString(),
-  };
-
-  writeStorage(picksKey, [pick, ...picks].slice(0, 100));
-  saveStatus.textContent = `${targetDraw}회 검증 대기 번호로 저장했습니다.`;
-  renderDashboard();
-}
-
 async function loadLottoResults() {
   latestStatus.textContent = "동행복권 회차 데이터를 불러오는 중입니다.";
   refreshResultsButton.disabled = true;
@@ -454,13 +307,11 @@ async function loadLottoResults() {
       : "동행복권 공개 회차 데이터를 기준으로 표시 중입니다.";
     renderRecentResults(recentDraws.slice(0, 5));
     renderOfficialRankRecords(recentDraws);
-    await verifySavedPicks(latestResult);
   } catch (error) {
     latestStatus.textContent = "브라우저에서 공식 회차 데이터를 불러오지 못했습니다. 잠시 후 다시 시도하거나 동행복권 공식 추첨결과를 확인해 주세요.";
     latestMeta.innerHTML = `<a href="https://www.dhlottery.co.kr/" target="_blank" rel="noopener">동행복권 공식 사이트 열기</a>`;
   } finally {
     refreshResultsButton.disabled = false;
-    renderDashboard();
   }
 }
 
@@ -506,10 +357,8 @@ themeToggle.addEventListener("click", () => {
 });
 
 button.addEventListener("click", renderNumbers);
-savePickButton.addEventListener("click", saveCurrentPick);
 refreshResultsButton.addEventListener("click", loadLottoResults);
 partnerForm.addEventListener("submit", handlePartnerSubmit);
 applyTheme(getInitialTheme());
 renderNumbers();
-renderDashboard();
 loadLottoResults();

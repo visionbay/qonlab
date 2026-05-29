@@ -31,7 +31,7 @@
 
     <nav class="site-nav" aria-label="주요 메뉴">
       <a href="#generator">번호 추첨</a>
-      <a href="#dashboard">당첨 기록</a>
+      <a href="#dashboard">실시간 대시보드</a>
       <a href="#guide">가이드</a>
       <a href="#privacy">개인정보</a>
       <a href="#contact">문의</a>
@@ -67,22 +67,17 @@
         <div class="numbers" id="numbers" aria-label="추첨 번호"></div>
         <div class="bonus" id="bonus" aria-label="보너스 번호"></div>
 
-        <div class="tool-actions">
-          <button class="action-button" id="actionButton" type="button">번호 생성하기</button>
-          <button class="secondary-button" id="savePickButton" type="button">다음 회차 기록에 저장</button>
-        </div>
+        <button class="action-button" id="actionButton" type="button">번호 생성하기</button>
         <p class="info">이 도구는 재미와 정보 제공을 위한 것이며 당첨을 보장하지 않습니다.</p>
-        <p class="save-status" id="saveStatus" role="status" aria-live="polite"></p>
       </section>
     </section>
 
     <section class="content-section dashboard-section" id="dashboard" aria-labelledby="dashboardTitle">
       <div class="section-heading">
         <p class="eyebrow">실제 회차 결과 기반</p>
-        <h2 id="dashboardTitle">당첨 번호와 내 기록 대시보드</h2>
+        <h2 id="dashboardTitle">실시간 로또 결과 대시보드</h2>
         <p>
-          동행복권 공개 회차 데이터를 조회해 최근 당첨 번호를 표시하고, 이 브라우저에 저장한 번호가
-          다음 회차 결과와 일치하면 자동으로 기록합니다. 실제 사용자가 아닌 당첨 후기는 생성하지 않습니다.
+          동행복권 공개 회차 데이터를 조회해 최근 당첨 번호와 최근 2년 안의 1등, 2등, 3등 기록을 분류해 표시합니다.
         </p>
       </div>
 
@@ -109,33 +104,21 @@
         <article class="record-panel">
           <div class="panel-title">
             <div>
-              <h3>내 번호 검증 기록</h3>
-              <p>저장된 번호는 이 브라우저에만 보관됩니다.</p>
+              <h3>1~3등 실시간 분류</h3>
+              <p>최신 캐시와 동행복권 공개 데이터를 기준으로 최근 2년 안의 1등 6건, 2등 20건, 3등 47건만 표시합니다.</p>
             </div>
           </div>
 
           <div class="official-rank-panel" aria-labelledby="officialRankTitle">
             <div class="official-rank-heading">
               <div>
-                <h4 id="officialRankTitle">공식 회차별 등수 분류</h4>
-                <p>최근 2년 안의 동행복권 회차 결과에서 1등 6건, 2등 20건, 3등 47건만 표시합니다.</p>
+                <h4 id="officialRankTitle">1~3등 기록</h4>
+                <p>각 항목은 공식 회차의 당첨게임 수와 1게임당 당첨금 기준입니다.</p>
               </div>
             </div>
             <div class="official-rank-stats" id="officialRankStats"></div>
             <div class="official-rank-list" id="officialRankEntries"></div>
           </div>
-
-          <div class="stats-grid" id="dashboardStats">
-            <span>대기 0</span>
-            <span>검증 0</span>
-            <span>당첨 0</span>
-          </div>
-
-          <h4>검증 대기 번호</h4>
-          <div class="entry-list" id="savedEntries"></div>
-
-          <h4>검증 완료 기록</h4>
-          <div class="entry-list" id="verifiedEntries"></div>
         </article>
       </div>
     </section>
@@ -221,7 +204,7 @@
         </details>
         <details>
           <summary>번호가 서버에 저장되나요?</summary>
-          <p>아니요. 저장 버튼을 누른 번호도 현재 브라우저의 localStorage에만 보관되며, 사이트 운영자가 수집하지 않습니다.</p>
+          <p>아니요. 번호 생성은 브라우저에서 즉시 처리되며, 생성된 번호를 별도로 수집하거나 저장하지 않습니다.</p>
         </details>
         <details>
           <summary>왜 확률 정보를 함께 제공하나요?</summary>
