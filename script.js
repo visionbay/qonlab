@@ -1,364 +1,213 @@
-const button = document.getElementById("actionButton");
-const numbersEl = document.getElementById("numbers");
-const bonusEl = document.getElementById("bonus");
-const themeToggle = document.getElementById("themeToggle");
-const themeIcon = themeToggle.querySelector(".theme-toggle__icon");
-const themeText = themeToggle.querySelector(".theme-toggle__text");
-const latestStatus = document.getElementById("latestStatus");
-const latestRound = document.getElementById("latestRound");
-const latestDate = document.getElementById("latestDate");
-const latestBalls = document.getElementById("latestBalls");
-const latestMeta = document.getElementById("latestMeta");
-const recentResults = document.getElementById("recentResults");
-const officialRankStats = document.getElementById("officialRankStats");
-const officialRankEntries = document.getElementById("officialRankEntries");
-const refreshResultsButton = document.getElementById("refreshResultsButton");
-const partnerForm = document.getElementById("partnerForm");
-const formStatus = document.getElementById("formStatus");
+/**
+ * Qonlab 공통 스크립트
+ * - 모든 페이지에서 안전하게 동작하도록 각 기능은 해당 요소가 있을 때만 초기화합니다.
+ * - 다크/화이트 테마 전환, 모바일 내비게이션, 로또 번호 생성기, 문의 폼 전송을 담당합니다.
+ */
 
-const savedTheme = localStorage.getItem("theme");
-const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-const resultCache = new Map();
+/* ---------- 테마 전환 ---------- */
+(function initTheme() {
+  const themeToggle = document.getElementById("themeToggle");
+  const savedTheme = localStorage.getItem("theme");
+  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
-let currentPick = null;
-let latestResult = null;
+  function applyTheme(theme) {
+    const isDark = theme === "dark";
+    document.body.dataset.theme = theme;
 
-function applyTheme(theme) {
-  const isDark = theme === "dark";
-
-  document.body.dataset.theme = theme;
-  themeToggle.setAttribute("aria-pressed", String(isDark));
-  themeToggle.setAttribute("aria-label", isDark ? "화이트 모드로 전환" : "다크 모드로 전환");
-  themeIcon.textContent = isDark ? "☾" : "☀";
-  themeText.textContent = isDark ? "다크" : "화이트";
-}
-
-function getInitialTheme() {
-  if (savedTheme === "dark" || savedTheme === "light") {
-    return savedTheme;
+    if (!themeToggle) return;
+    const themeIcon = themeToggle.querySelector(".theme-toggle__icon");
+    const themeText = themeToggle.querySelector(".theme-toggle__text");
+    themeToggle.setAttribute("aria-pressed", String(isDark));
+    themeToggle.setAttribute("aria-label", isDark ? "화이트 모드로 전환" : "다크 모드로 전환");
+    if (themeIcon) themeIcon.textContent = isDark ? "☾" : "☀";
+    if (themeText) themeText.textContent = isDark ? "다크" : "화이트";
   }
 
-  return prefersDark ? "dark" : "light";
-}
+  const initialTheme = savedTheme === "dark" || savedTheme === "light"
+    ? savedTheme
+    : prefersDark ? "dark" : "light";
 
-function generateLottoNumbers() {
-  const pool = Array.from({ length: 45 }, (_, i) => i + 1);
-  const selected = [];
+  applyTheme(initialTheme);
 
-  for (let i = 0; i < 7; i += 1) {
-    const index = Math.floor(Math.random() * pool.length);
-    selected.push(pool.splice(index, 1)[0]);
-  }
-
-  const mainNumbers = selected.slice(0, 6).sort((a, b) => a - b);
-  const bonusNumber = selected[6];
-  return { mainNumbers, bonusNumber };
-}
-
-function renderBallList(numbers, bonusNumber) {
-  const mainBalls = numbers.map((num) => `<span class="ball">${num}</span>`).join("");
-  const bonusBall = bonusNumber ? `<span class="ball bonus-ball">+ ${bonusNumber}</span>` : "";
-  return `${mainBalls}${bonusBall}`;
-}
-
-function renderNumbers() {
-  currentPick = generateLottoNumbers();
-
-  numbersEl.innerHTML = currentPick.mainNumbers
-    .map((num) => `<span class="ball">${num}</span>`)
-    .join("");
-
-  bonusEl.innerHTML = `<span class="ball">보너스</span><span class="ball">${currentPick.bonusNumber}</span>`;
-}
-
-function estimateLatestDrawNo() {
-  const firstDrawDate = new Date("2002-12-07T20:45:00+09:00").getTime();
-  const oneWeek = 7 * 24 * 60 * 60 * 1000;
-  const elapsed = Date.now() - firstDrawDate;
-  return Math.max(1, Math.floor(elapsed / oneWeek) + 1);
-}
-
-function normalizeDraw(data) {
-  const drawNo = Number(data.drwNo || data.ltEpsd);
-  const date = data.drwNoDate || formatDrawDate(data.ltRflYmd);
-  const numbers = data.ltEpsd
-    ? [1, 2, 3, 4, 5, 6].map((index) => Number(data[`tm${index}WnNo`]))
-    : [1, 2, 3, 4, 5, 6].map((index) => Number(data[`drwtNo${index}`]));
-
-  return {
-    drawNo,
-    date,
-    numbers,
-    bonusNumber: Number(data.bnusNo || data.bnsWnNo),
-    firstPrizeWinners: Number(data.firstPrzwnerCo || data.rnk1WnNope || 0),
-    firstWinAmount: Number(data.firstWinamnt || data.rnk1WnAmt || 0),
-    totalSales: Number(data.totSellamnt || data.wholEpsdSumNtslAmt || data.rlvtEpsdSumNtslAmt || 0),
-    ranks: {
-      "1등": {
-        winners: Number(data.rnk1WnNope || data.firstPrzwnerCo || 0),
-        amount: Number(data.rnk1WnAmt || data.firstWinamnt || 0),
-        totalAmount: Number(data.rnk1SumWnAmt || 0),
-      },
-      "2등": {
-        winners: Number(data.rnk2WnNope || 0),
-        amount: Number(data.rnk2WnAmt || 0),
-        totalAmount: Number(data.rnk2SumWnAmt || 0),
-      },
-      "3등": {
-        winners: Number(data.rnk3WnNope || 0),
-        amount: Number(data.rnk3WnAmt || 0),
-        totalAmount: Number(data.rnk3SumWnAmt || 0),
-      },
-      "4등": {
-        winners: Number(data.rnk4WnNope || 0),
-        amount: Number(data.rnk4WnAmt || 0),
-        totalAmount: Number(data.rnk4SumWnAmt || 0),
-      },
-      "5등": {
-        winners: Number(data.rnk5WnNope || 0),
-        amount: Number(data.rnk5WnAmt || 0),
-        totalAmount: Number(data.rnk5SumWnAmt || 0),
-      },
-    },
-  };
-}
-
-function formatDrawDate(value) {
-  if (!value || value.length !== 8) {
-    return "";
-  }
-
-  return `${value.slice(0, 4)}-${value.slice(4, 6)}-${value.slice(6, 8)}`;
-}
-
-async function fetchDraw(drawNo) {
-  if (resultCache.has(drawNo)) {
-    return resultCache.get(drawNo);
-  }
-
-  const url = `https://www.dhlottery.co.kr/lt645/selectPstLt645InfoNew.do?srchDir=center&srchLtEpsd=${drawNo}`;
-  const response = await fetch(url, {
-    headers: {
-      Accept: "application/json",
-    },
-  });
-  const data = await response.json();
-  const list = data?.data?.list || [];
-  const target = list.find((draw) => Number(draw.ltEpsd) === Number(drawNo));
-
-  if (!target) {
-    throw new Error(`Draw ${drawNo} is not available`);
-  }
-
-  const draw = normalizeDraw(target);
-  resultCache.set(drawNo, draw);
-  return draw;
-}
-
-async function fetchLatestDraw() {
-  const estimated = estimateLatestDrawNo();
-
-  for (let drawNo = estimated + 1; drawNo >= Math.max(1, estimated - 12); drawNo -= 1) {
-    try {
-      const response = await fetch(`https://www.dhlottery.co.kr/lt645/selectPstLt645InfoNew.do?srchDir=center&srchLtEpsd=${drawNo}`, {
-        headers: {
-          Accept: "application/json",
-        },
-      });
-      const data = await response.json();
-      const list = data?.data?.list || [];
-
-      if (list.length > 0) {
-        return normalizeDraw(list.sort((a, b) => Number(b.ltEpsd) - Number(a.ltEpsd))[0]);
-      }
-    } catch (error) {
-      // 최근 추정 회차가 아직 공개되지 않았거나 브라우저에서 차단될 수 있어 이전 회차를 순차 확인합니다.
-    }
-  }
-
-  throw new Error("No draw data available");
-}
-
-async function fetchCachedResults() {
-  const response = await fetch("./data/lotto-results.json", {
-    cache: "no-store",
-    headers: {
-      Accept: "application/json",
-    },
-  });
-  const data = await response.json();
-
-  if (!data.latest || !Array.isArray(data.results)) {
-    throw new Error("Cached results are empty");
-  }
-
-  data.results.forEach((draw) => resultCache.set(draw.drawNo, draw));
-  return {
-    latest: data.latest,
-    results: data.results,
-    generatedAt: data.generatedAt,
-  };
-}
-
-function formatCurrency(value) {
-  if (!value) {
-    return "정보 없음";
-  }
-
-  return `${value.toLocaleString("ko-KR")}원`;
-}
-
-function renderLatestResult(draw) {
-  latestRound.textContent = `${draw.drawNo}회`;
-  latestDate.textContent = draw.date || "추첨일 정보 없음";
-  latestBalls.innerHTML = renderBallList(draw.numbers, draw.bonusNumber);
-  latestMeta.textContent = `1등 ${draw.firstPrizeWinners.toLocaleString("ko-KR")}명 · 1등 당첨금 ${formatCurrency(draw.firstWinAmount)}`;
-}
-
-function renderRecentResults(draws) {
-  recentResults.innerHTML = draws
-    .map((draw) => `
-      <div class="recent-row">
-        <strong>${draw.drawNo}회</strong>
-        <span>${draw.numbers.join(", ")} + ${draw.bonusNumber}</span>
-      </div>
-    `)
-    .join("");
-}
-
-function buildOfficialRankRecords(draws) {
-  const withinTwoYears = draws
-    .filter((draw) => {
-      if (!draw.date) return false;
-      const drawDate = new Date(`${draw.date}T00:00:00+09:00`);
-      const twoYearsAgo = new Date();
-      twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2);
-      return drawDate >= twoYearsAgo;
-    })
-    .sort((a, b) => b.drawNo - a.drawNo);
-  const limits = { "1등": 6, "2등": 20, "3등": 47 };
-
-  return Object.entries(limits).flatMap(([rank, limit]) =>
-    withinTwoYears
-      .filter((draw) => draw.ranks?.[rank]?.winners > 0)
-      .slice(0, limit)
-      .map((draw) => ({
-        drawNo: draw.drawNo,
-        date: draw.date,
-        rank,
-        winners: draw.ranks[rank].winners,
-        amount: draw.ranks[rank].amount,
-        numbers: draw.numbers,
-        bonusNumber: draw.bonusNumber,
-      })),
-  );
-}
-
-function renderOfficialRankRecords(draws) {
-  const records = buildOfficialRankRecords(draws);
-  const counts = records.reduce((acc, record) => {
-    acc[record.rank] = (acc[record.rank] || 0) + 1;
-    return acc;
-  }, {});
-
-  officialRankStats.innerHTML = `
-    <span>1등 ${counts["1등"] || 0}/6</span>
-    <span>2등 ${counts["2등"] || 0}/20</span>
-    <span>3등 ${counts["3등"] || 0}/47</span>
-    <span>총 ${records.length}/73</span>
-  `;
-
-  officialRankEntries.innerHTML = records.length
-    ? records.map((record) => `
-      <div class="official-rank-entry">
-        <div>
-          <strong>${record.rank} · ${record.drawNo}회</strong>
-          <p>${record.date} · 당첨게임 ${record.winners.toLocaleString("ko-KR")}개 · 1게임당 ${formatCurrency(record.amount)}</p>
-          <p>${record.numbers.join(", ")} + ${record.bonusNumber}</p>
-        </div>
-      </div>
-    `).join("")
-    : `<p class="empty-state">공식 회차 데이터가 준비되면 최근 2년 내 1~3등 기록을 표시합니다.</p>`;
-}
-
-async function loadLottoResults() {
-  latestStatus.textContent = "동행복권 회차 데이터를 불러오는 중입니다.";
-  refreshResultsButton.disabled = true;
-
-  try {
-    let recentDraws = [];
-    let isCached = false;
-
-    try {
-      latestResult = await fetchLatestDraw();
-      for (let drawNo = latestResult.drawNo; drawNo >= Math.max(1, latestResult.drawNo - 103); drawNo -= 1) {
-        recentDraws.push(await fetchDraw(drawNo));
-      }
-    } catch (error) {
-      const cached = await fetchCachedResults();
-      latestResult = cached.latest;
-      recentDraws = cached.results.slice(0, 5);
-      isCached = true;
-    }
-
-    renderLatestResult(latestResult);
-    latestStatus.textContent = isCached
-      ? "브라우저 직접 조회가 제한되어 서버 캐시 데이터를 표시 중입니다."
-      : "동행복권 공개 회차 데이터를 기준으로 표시 중입니다.";
-    renderRecentResults(recentDraws.slice(0, 5));
-    renderOfficialRankRecords(recentDraws);
-  } catch (error) {
-    latestStatus.textContent = "브라우저에서 공식 회차 데이터를 불러오지 못했습니다. 잠시 후 다시 시도하거나 동행복권 공식 추첨결과를 확인해 주세요.";
-    latestMeta.innerHTML = `<a href="https://www.dhlottery.co.kr/" target="_blank" rel="noopener">동행복권 공식 사이트 열기</a>`;
-  } finally {
-    refreshResultsButton.disabled = false;
-  }
-}
-
-async function handlePartnerSubmit(event) {
-  event.preventDefault();
-
-  const submitButton = partnerForm.querySelector(".form-submit");
-  const formData = new FormData(partnerForm);
-
-  submitButton.disabled = true;
-  formStatus.dataset.state = "pending";
-  formStatus.textContent = "문의 내용을 전송하는 중입니다.";
-
-  try {
-    const response = await fetch(partnerForm.action, {
-      method: "POST",
-      body: formData,
-      headers: {
-        Accept: "application/json",
-      },
+  if (themeToggle) {
+    themeToggle.addEventListener("click", () => {
+      const nextTheme = document.body.dataset.theme === "dark" ? "light" : "dark";
+      localStorage.setItem("theme", nextTheme);
+      applyTheme(nextTheme);
     });
+  }
+})();
 
-    if (!response.ok) {
-      throw new Error("Formspree request failed");
+/* ---------- 모바일 내비게이션 ---------- */
+(function initNav() {
+  const navToggle = document.getElementById("navToggle");
+  const nav = document.getElementById("siteNav");
+  if (!navToggle || !nav) return;
+
+  navToggle.addEventListener("click", () => {
+    const isOpen = nav.classList.toggle("is-open");
+    navToggle.setAttribute("aria-expanded", String(isOpen));
+  });
+
+  nav.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => {
+      nav.classList.remove("is-open");
+      navToggle.setAttribute("aria-expanded", "false");
+    });
+  });
+})();
+
+/* ---------- 로또 번호 생성기 ---------- */
+(function initGenerator() {
+  const button = document.getElementById("actionButton");
+  const numbersEl = document.getElementById("numbers");
+  const bonusEl = document.getElementById("bonus");
+  if (!button || !numbersEl || !bonusEl) return;
+
+  function generateLottoNumbers() {
+    const pool = Array.from({ length: 45 }, (_, i) => i + 1);
+    const selected = [];
+
+    for (let i = 0; i < 7; i += 1) {
+      const index = Math.floor(Math.random() * pool.length);
+      selected.push(pool.splice(index, 1)[0]);
     }
 
-    partnerForm.reset();
-    formStatus.dataset.state = "success";
-    formStatus.textContent = "문의가 접수되었습니다. 확인 후 연락드리겠습니다.";
-  } catch (error) {
-    formStatus.dataset.state = "error";
-    formStatus.textContent = "전송에 실패했습니다. 잠시 후 다시 시도해 주세요.";
-  } finally {
-    submitButton.disabled = false;
+    const mainNumbers = selected.slice(0, 6).sort((a, b) => a - b);
+    const bonusNumber = selected[6];
+    return { mainNumbers, bonusNumber };
   }
-}
 
-themeToggle.addEventListener("click", () => {
-  const nextTheme = document.body.dataset.theme === "dark" ? "light" : "dark";
+  function renderNumbers() {
+    const pick = generateLottoNumbers();
+    numbersEl.innerHTML = pick.mainNumbers
+      .map((num) => `<span class="ball">${num}</span>`)
+      .join("");
+    bonusEl.innerHTML = `<span class="ball" style="background:var(--surface-strong);color:var(--muted);box-shadow:none">보너스</span><span class="ball bonus-ball">${pick.bonusNumber}</span>`;
+  }
 
-  localStorage.setItem("theme", nextTheme);
-  applyTheme(nextTheme);
-});
+  button.addEventListener("click", renderNumbers);
+  renderNumbers();
+})();
 
-button.addEventListener("click", renderNumbers);
-refreshResultsButton.addEventListener("click", loadLottoResults);
-partnerForm.addEventListener("submit", handlePartnerSubmit);
-applyTheme(getInitialTheme());
-renderNumbers();
-loadLottoResults();
+/* ---------- 문의 폼 전송 ---------- */
+(function initPartnerForm() {
+  const partnerForm = document.getElementById("partnerForm");
+  const formStatus = document.getElementById("formStatus");
+  if (!partnerForm || !formStatus) return;
+
+  partnerForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const submitButton = partnerForm.querySelector(".form-submit");
+    const formData = new FormData(partnerForm);
+
+    if (submitButton) submitButton.disabled = true;
+    formStatus.dataset.state = "pending";
+    formStatus.textContent = "문의 내용을 전송하는 중입니다.";
+
+    try {
+      const response = await fetch(partnerForm.action, {
+        method: "POST",
+        body: formData,
+        headers: { Accept: "application/json" },
+      });
+
+      if (!response.ok) {
+        throw new Error("Formspree request failed");
+      }
+
+      partnerForm.reset();
+      formStatus.dataset.state = "success";
+      formStatus.textContent = "문의가 접수되었습니다. 확인 후 연락드리겠습니다.";
+    } catch (error) {
+      formStatus.dataset.state = "error";
+      formStatus.textContent = "전송에 실패했습니다. 잠시 후 다시 시도하거나 이메일로 직접 보내주세요.";
+    } finally {
+      if (submitButton) submitButton.disabled = false;
+    }
+  });
+})();
+
+/* ---------- 최근 당첨 번호 (같은 출처 JSON에서만 읽음) ---------- */
+(function initRecentResults() {
+  const section = document.getElementById("recent");
+  const latestEl = document.getElementById("latestDraw");
+  const tableBody = document.getElementById("recentTableBody");
+  const updatedEl = document.getElementById("recentUpdated");
+  if (!section || !latestEl || !tableBody) return;
+
+  function fmtWon(value) {
+    if (!value || Number.isNaN(Number(value))) return "정보 없음";
+    return `${Number(value).toLocaleString("ko-KR")}원`;
+  }
+
+  function ballRow(numbers, bonus) {
+    const main = numbers.map((n) => `<span class="ball">${n}</span>`).join("");
+    const b = bonus ? `<span class="ball bonus-ball">${bonus}</span>` : "";
+    return `${main}${b}`;
+  }
+
+  fetch("./data/lotto-results.json", { headers: { Accept: "application/json" } })
+    .then((res) => {
+      if (!res.ok) throw new Error("data not available");
+      return res.json();
+    })
+    .then((data) => {
+      const latest = data && data.latest;
+      const results = Array.isArray(data && data.results) ? data.results : [];
+      if (!latest || !Array.isArray(latest.numbers) || latest.numbers.length < 6) {
+        throw new Error("malformed data");
+      }
+
+      // 최신 회차 카드
+      latestEl.innerHTML = `
+        <div class="latest-head">
+          <strong>${latest.drawNo}회</strong>
+          <span>${latest.date || ""} 추첨</span>
+        </div>
+        <div class="latest-balls" aria-label="최신 당첨 번호">${ballRow(latest.numbers, latest.bonusNumber)}</div>
+        <p class="latest-prize">1등 ${Number(latest.firstPrizeWinners || 0).toLocaleString("ko-KR")}명 · 1등 1게임당 ${fmtWon(latest.firstWinAmount)}</p>
+      `;
+
+      // 최근 회차 표 (최신 회차 제외, 최대 8개)
+      const rows = results
+        .slice()
+        .sort((a, b) => b.drawNo - a.drawNo)
+        .filter((d) => d.drawNo !== latest.drawNo && Array.isArray(d.numbers) && d.numbers.length >= 6)
+        .slice(0, 8);
+
+      tableBody.innerHTML = rows
+        .map(
+          (d) => `
+        <tr>
+          <td>${d.drawNo}회</td>
+          <td>${d.date || "-"}</td>
+          <td class="recent-balls-inline">${d.numbers.join(", ")}</td>
+          <td class="num">+${d.bonusNumber}</td>
+        </tr>`
+        )
+        .join("");
+
+      if (updatedEl && data.generatedAt) {
+        const dt = new Date(data.generatedAt);
+        if (!Number.isNaN(dt.getTime())) {
+          updatedEl.textContent = `데이터 기준 시점: ${dt.toLocaleString("ko-KR")} · 공개 데이터를 정기적으로 갱신합니다.`;
+        }
+      }
+
+      // 모든 렌더링이 성공한 경우에만 노출
+      section.removeAttribute("hidden");
+    })
+    .catch(() => {
+      // 데이터가 없거나 형식이 맞지 않으면 섹션을 노출하지 않습니다(깨진 화면 방지).
+      section.setAttribute("hidden", "");
+    });
+})();
+
+/* ---------- 푸터 연도 자동 갱신 ---------- */
+(function initYear() {
+  document.querySelectorAll("[data-year]").forEach((el) => {
+    el.textContent = String(new Date().getFullYear());
+  });
+})();
