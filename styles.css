@@ -17,6 +17,11 @@
   --toggle-bg: #eef2ff;
   --toggle-border: #c7d2fe;
   --toggle-text: #312e81;
+  --field-bg: #ffffff;
+  --field-border: #cbd5e1;
+  --field-focus: #4f46e5;
+  --success: #15803d;
+  --error: #b91c1c;
   --card-shadow: rgba(15, 23, 42, 0.12);
 }
 
@@ -35,6 +40,11 @@ body[data-theme="dark"] {
   --toggle-bg: #1e293b;
   --toggle-border: #475569;
   --toggle-text: #e0e7ff;
+  --field-bg: #0f172a;
+  --field-border: #475569;
+  --field-focus: #a5b4fc;
+  --success: #86efac;
+  --error: #fca5a5;
   --card-shadow: rgba(0, 0, 0, 0.32);
 }
 
@@ -49,8 +59,10 @@ body {
 .container {
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: 1.5rem;
   padding: 2rem;
 }
 
@@ -62,6 +74,19 @@ body {
   box-shadow: 0 24px 80px var(--card-shadow);
   text-align: center;
   transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.lotto-card {
+  padding-top: 1.25rem;
+}
+
+.contact-card {
+  padding-top: 2rem;
+  text-align: left;
+}
+
+.contact-card .header {
+  text-align: center;
 }
 
 .topbar {
@@ -103,11 +128,17 @@ body {
   font-size: clamp(2rem, 3.5vw, 2.8rem);
 }
 
+.header h2 {
+  margin: 0;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+}
+
 .header p {
   margin: 0.75rem auto 1.8rem;
   max-width: 360px;
   color: var(--muted);
   line-height: 1.6;
+  text-align: center;
 }
 
 .numbers,
@@ -158,6 +189,79 @@ body {
   margin-top: 1rem;
   color: var(--subtle);
   font-size: 0.95rem;
+}
+
+.partner-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.partner-form label {
+  display: grid;
+  gap: 0.45rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.partner-form input,
+.partner-form textarea {
+  width: 100%;
+  border: 1px solid var(--field-border);
+  border-radius: 14px;
+  background: var(--field-bg);
+  color: var(--text);
+  font: inherit;
+  padding: 0.85rem 0.95rem;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.partner-form textarea {
+  resize: vertical;
+  min-height: 8rem;
+}
+
+.partner-form input:focus,
+.partner-form textarea:focus {
+  border-color: var(--field-focus);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--field-focus) 22%, transparent);
+  outline: none;
+}
+
+.partner-form input::placeholder,
+.partner-form textarea::placeholder {
+  color: var(--subtle);
+}
+
+.form-submit {
+  width: 100%;
+}
+
+.form-submit:disabled {
+  cursor: wait;
+  opacity: 0.72;
+  transform: none;
+}
+
+.form-status {
+  min-height: 1.4rem;
+  margin: 0;
+  color: var(--subtle);
+  font-size: 0.92rem;
+  text-align: center;
+}
+
+.form-status[data-state="success"] {
+  color: var(--success);
+}
+
+.form-status[data-state="error"] {
+  color: var(--error);
+}
+
+.honeypot {
+  position: absolute;
+  left: -9999px;
 }
 
 @media (max-width: 420px) {
