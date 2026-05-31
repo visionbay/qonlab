@@ -1,6 +1,6 @@
 {
   "source": "https://www.dhlottery.co.kr/lt645/selectPstLt645InfoNew.do",
-  "generatedAt": "2026-05-31T13:10:01.151Z",
+  "generatedAt": "2026-05-31T19:00:17.195Z",
   "latest": {
     "drawNo": 1226,
     "date": "2026-05-30",
@@ -4514,49 +4514,6 @@
           "winners": 2456500,
           "amount": 5000,
           "totalAmount": 12282500000
-        }
-      }
-    },
-    {
-      "drawNo": 1122,
-      "date": "2024-06-01",
-      "numbers": [
-        3,
-        6,
-        21,
-        30,
-        34,
-        35
-      ],
-      "bonusNumber": 22,
-      "firstPrizeWinners": 11,
-      "firstWinAmount": 2556266046,
-      "totalSales": 115540004000,
-      "ranks": {
-        "1등": {
-          "winners": 11,
-          "amount": 2556266046,
-          "totalAmount": 28118926506
-        },
-        "2등": {
-          "winners": 99,
-          "amount": 47338261,
-          "totalAmount": 4686487839
-        },
-        "3등": {
-          "winners": 2932,
-          "amount": 1598393,
-          "totalAmount": 4686488276
-        },
-        "4등": {
-          "winners": 151473,
-          "amount": 50000,
-          "totalAmount": 7573650000
-        },
-        "5등": {
-          "winners": 2540890,
-          "amount": 5000,
-          "totalAmount": 12704450000
         }
       }
     }
