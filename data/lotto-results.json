@@ -1,50 +1,93 @@
 {
   "source": "https://www.dhlottery.co.kr/lt645/selectPstLt645InfoNew.do",
-  "generatedAt": "2026-09-12T09:42:41.469Z",
+  "generatedAt": "2026-09-12T14:32:49.120Z",
   "latest": {
-    "drawNo": 1240,
-    "date": "2026-09-05",
+    "drawNo": 1241,
+    "date": "2026-09-12",
     "numbers": [
-      11,
+      7,
       13,
-      19,
-      20,
-      31,
-      44
+      16,
+      23,
+      24,
+      43
     ],
-    "bonusNumber": 27,
-    "firstPrizeWinners": 16,
-    "firstWinAmount": 1791817758,
-    "totalSales": 118165321000,
+    "bonusNumber": 9,
+    "firstPrizeWinners": 18,
+    "firstWinAmount": 1628391980,
+    "totalSales": 121918085000,
     "ranks": {
       "1등": {
-        "winners": 16,
-        "amount": 1791817758,
-        "totalAmount": 28669084128
+        "winners": 18,
+        "amount": 1628391980,
+        "totalAmount": 29311055640
       },
       "2등": {
-        "winners": 78,
-        "amount": 61258727,
-        "totalAmount": 4778180706
+        "winners": 90,
+        "amount": 54279733,
+        "totalAmount": 4885175970
       },
       "3등": {
-        "winners": 3087,
-        "amount": 1547840,
-        "totalAmount": 4778182080
+        "winners": 3254,
+        "amount": 1501284,
+        "totalAmount": 4885178136
       },
       "4등": {
-        "winners": 155202,
+        "winners": 165086,
         "amount": 50000,
-        "totalAmount": 7760100000
+        "totalAmount": 8254300000
       },
       "5등": {
-        "winners": 2619423,
+        "winners": 2724667,
         "amount": 5000,
-        "totalAmount": 13097115000
+        "totalAmount": 13623335000
       }
     }
   },
   "results": [
+    {
+      "drawNo": 1241,
+      "date": "2026-09-12",
+      "numbers": [
+        7,
+        13,
+        16,
+        23,
+        24,
+        43
+      ],
+      "bonusNumber": 9,
+      "firstPrizeWinners": 18,
+      "firstWinAmount": 1628391980,
+      "totalSales": 121918085000,
+      "ranks": {
+        "1등": {
+          "winners": 18,
+          "amount": 1628391980,
+          "totalAmount": 29311055640
+        },
+        "2등": {
+          "winners": 90,
+          "amount": 54279733,
+          "totalAmount": 4885175970
+        },
+        "3등": {
+          "winners": 3254,
+          "amount": 1501284,
+          "totalAmount": 4885178136
+        },
+        "4등": {
+          "winners": 165086,
+          "amount": 50000,
+          "totalAmount": 8254300000
+        },
+        "5등": {
+          "winners": 2724667,
+          "amount": 5000,
+          "totalAmount": 13623335000
+        }
+      }
+    },
     {
       "drawNo": 1240,
       "date": "2026-09-05",
